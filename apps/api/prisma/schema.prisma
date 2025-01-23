@@ -10,12 +10,71 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Sample {
-  id        Int      @id @default(autoincrement())
-  name      String
-  code      String   @unique
+model Personnel {
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  password String?
+  isVerified Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("samples") // if you want to use snake_case format
+  invoices Invoice[]
+
+}
+
+model Client {
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  address String
+  phone String
+  paymentMethod paymentMethod
+  status Status @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invoices Invoice[]
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+enum paymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  PAYPAL
+}
+
+model Product {
+  id Int @id @default(autoincrement())
+  name String
+  description String  
+  price Float
+  stock Int?
+  
+}
+
+model Invoice {
+  id String @id
+  personnel_id Int
+  client_id Int
+  total Float
+  status Invoice_Status @default(PENDING)
+
+  dueDate DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  personnel Personnel @relation(fields: [personnel_id], references: [id])
+  client Client @relation(fields: [client_id], references: [id])
+
+}
+
+enum Invoice_Status {
+  PENDING
+  PAID
+  CANCELLED
 }
