@@ -1,1 +1,92 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Delius&family=Pacifico&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background: linear-gradient(to bottom, #7fcdf1, #fac89a) no-repeat;
+  height: 100vh;
+}
+
+.pacifico-regular {
+  font-family: 'Pacifico', serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.delius-regular {
+  font-family: 'Delius', serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@keyframes header {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes sidebar {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes clientOptions {
+  from {
+    display: none;
+    transform: translateY(-75%);
+  }
+  to {
+    display: block;
+    transform: translateY(0);
+  }
+}
+
+@keyframes productOptions {
+  from {
+    display: none;
+    transform: translateY(-75%);
+  }
+  to {
+    display: block;
+    transform: translateY(0);
+  }
+}
+
+@keyframes invoiceOptions {
+  from {
+    display: none;
+    transform: translateY(-75%);
+  }
+  to {
+    display: block;
+    transform: translateY(0);
+  }
+}
+
+.slideIn {
+  animation: header 0.5s ease-in-out;
+}
+
+.sidebarIn {
+  animation: sidebar 0.5s ease-in-out;
+}
+
+.clientOptionsIn {
+  animation: clientOptions 0.5s ease-in-out;
+}
+
+.productOptionsIn {
+  animation: productOptions 0.5s ease-in-out;
+}
+
+.invoiceOptionsIn {
+  animation: invoiceOptions 0.5s ease-in-out;
+}

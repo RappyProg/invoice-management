@@ -11,6 +11,10 @@ export async function fetchCookie(name: string){
     return cookies().get(name)?.value;
 }
 
+export async function checkCookie(name: string){
+    return cookies().get(name) ? true : false;
+}
+
 export async function deleteCookie(name:string){
     cookies().delete(name);
 }

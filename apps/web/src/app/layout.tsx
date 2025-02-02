@@ -1,12 +1,15 @@
+import "@fortawesome/fontawesome-svg-core/styles.css";
+import { config } from "@fortawesome/fontawesome-svg-core";
+config.autoAddCss = false;
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
-import { Suspense } from 'react';
 import AppWrapper from '@/components/wrapper/appWrapper';
 import { ToastContainer } from 'react-toastify';
-import Loading from '@/components/loading/Loading';
+import ContentWrapper from '@/components/wrapper/contentWrapper';
+import { Sidebar } from '@/components/Sidebar';
+import Header from '@/components/Header';
+import StoreProvider from '@/components/miscellaneous/storeProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -23,18 +26,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AppWrapper>
-          <Suspense fallback={<Loading />}>
-            <Header />
-            {children}
-            <Footer />
+        <StoreProvider>
+          <AppWrapper>
+            <Sidebar />
+            <ContentWrapper>
+              <Header />
+              {children}
+            </ContentWrapper>
             <ToastContainer
               position="top-right"
               autoClose={5000}
               closeOnClick
             />
-          </Suspense>
-        </AppWrapper>
+          </AppWrapper>
+        </StoreProvider>
       </body>
     </html>
   );

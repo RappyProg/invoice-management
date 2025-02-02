@@ -4,6 +4,7 @@ import { compare, genSalt, hash } from 'bcrypt';
 import { sign, verify } from 'jsonwebtoken';
 import { sendVerificationMail } from '@/helpers/nodemailer';
 import { createToken } from '@/middleware/token';
+import { findPersonnel, findPersonnelById } from '@/helpers/prismaFind';
 
 export class PersonnelController {
   async register(req: Request, res: Response) {
@@ -38,9 +39,7 @@ export class PersonnelController {
         id: number;
         email: string;
       };
-      const existingPersonnel = await prisma.personnel.findUnique({
-        where: { id: decoded.id },
-      });
+      const existingPersonnel = await findPersonnelById(decoded.id);
 
       if (existingPersonnel?.isVerified === false) {
         await prisma.personnel.update({
@@ -65,9 +64,7 @@ export class PersonnelController {
   async login(req: Request, res: Response) {
     try {
       const { email, password } = req.body;
-      const personnel = await prisma.personnel.findUnique({
-        where: { email },
-      });
+      const personnel = await findPersonnel(email);
       if (!personnel) throw new Error('Personnel not found');
       if (!personnel.isVerified) {
         await sendVerificationMail(personnel.id, personnel.email);
@@ -76,12 +73,15 @@ export class PersonnelController {
       if (!personnel.password) throw new Error('Password not set');
       const isPasswordValid = await compare(password, personnel.password);
       
-      return res.status(200).send({
+      if(isPasswordValid){
+        return res.status(200).send({
         status: 'success',
         message: 'Login successful',
         token,
         personnel,
       });
+      }
+      
     } catch (error: any) {
       return res.status(400).send({
         status: 'error',

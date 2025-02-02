@@ -20,7 +20,7 @@ export const sendVerificationMail = async (userId: number, userEmail: string) =>
     const templatePath = path.join(__dirname, '../templates/verificationMail.hbs');
     const source = fs.readFileSync(templatePath, 'utf-8');
     const compiled = handlebars.compile(source);
-    const html = compiled({link: `${process.env.CLIENT_URL}/personnel/${token}`});
+    const html = compiled({link: `${process.env.CLIENT_URL}/personnel/verify/${token}`});
 
     await transporter.sendMail({
         from: process.env.EMAIL,

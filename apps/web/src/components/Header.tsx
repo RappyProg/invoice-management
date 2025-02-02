@@ -1,45 +1,25 @@
 'use client';
-import { fetchCookie } from "@/lib/cookie";
-import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { useAppSelector } from '@/app/store/hooks';
+import UserDropdowns from './personnel/dashboard/UserDropdowns';
 
-export const Header = () => {
-  const [token, setToken] = useState<string | null>(null);
-  const pathname = usePathname();
 
-  useEffect(() => {
-    const fetchToken = async () => {
-      try {
-        const storedToken = await fetchCookie("token");
-        setToken(storedToken!);
-      } catch (error) {
-        console.error("Error fetching token:", error);
-      }
-    };
 
-    fetchToken();
-  }, []);
+export default function Header() {
+  const token = useAppSelector((state) => state.token.token);
+  const active = useAppSelector((state) => state.personnel.logs?.active);
+  const personnel = useAppSelector((state) => state.personnel.profile);
 
-  const isActive = (path: string) => pathname.startsWith(path);
-
-  if (!token) {
-    return <div className="hidden"></div>;
+  if (!token && !active) {
+    return <div className="hidden translate-x-full"></div>;
   }
 
   return (
-    <div className="flex flex-row justify-between items-center w-full h-16 bg-gray-800 text-white">
-      <div>
-        <p>Fees2Pay</p>
-      </div>
-      <div className="flex space-x-4">
-        <div>Clients</div>
-        <div>Products</div>
-        <div>Invoices</div>
-      </div>
-      <div className="flex space-x-4">
-        <div>Profile</div>
-        <div>Logout</div>
+    <div className="m-5 p-7 rounded-full bg-white shadow-md flex flex-row justify-between duration-100 slideIn">
+      <p className="delius-regular text-2xl">Welcome back, {personnel?.name}</p>
+      <div className='mr-10'>
+        <UserDropdowns />
+        
       </div>
     </div>
   );
-};
+}

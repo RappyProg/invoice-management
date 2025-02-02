@@ -10,6 +10,9 @@ import express, {
 import cors from 'cors';
 import { PORT } from './config';
 import { PersonnelRouter } from './routers/personnel.router';
+import { ClientRouter } from './routers/client.router';
+import { ProductRouter } from './routers/product.router';
+import { InvoiceRouter } from './routers/invoice.router';
 
 export default class App {
   private app: Express;
@@ -52,11 +55,17 @@ export default class App {
 
   private routes(): void {
     const personnelRouter = new PersonnelRouter();
+    const clientRouter = new ClientRouter();
+    const productRouter = new ProductRouter();
+    const invoiceRouter = new InvoiceRouter();
 
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
     });
     this.app.use('/api/personnel', personnelRouter.getRouter());
+    this.app.use('/api/client', clientRouter.getRouter());
+    this.app.use('/api/product', productRouter.getRouter());
+    this.app.use('/api/invoice', invoiceRouter.getRouter());
   }
 
   public start(): void {

@@ -1,4 +1,7 @@
 'use client';
+import { useAppSelector } from '@/app/store/hooks';
+import { loggingIn, setProfile } from '@/app/store/slices/personnelSlice';
+import { dispatchToken } from '@/app/store/slices/tokenSlice';
 import { createCookie } from '@/lib/cookie';
 import { login } from '@/lib/personnel';
 import { ILogin } from '@/types/personnel';
@@ -6,6 +9,7 @@ import { ErrorMessage, Field, Form, Formik, FormikHelpers } from 'formik';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 
@@ -17,17 +21,31 @@ const LoginSchema = yup.object().shape({
 export default function LoginForm() {
   const [token, setToken] = useState('');
   const router = useRouter();
+  const dispatch = useDispatch();
+  const active = useAppSelector((state) => state.personnel.logs?.active);
+  const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
   const onLogin = async (data: ILogin, action: FormikHelpers<ILogin>) => {
     const { result, ok } = await login(data);
     if (ok && result.token) {
-      createCookie('token', result.token);
+      await createCookie('token', result.token);
       setToken(result.token);
+      dispatch(setProfile(result.personnel));
+      dispatch(dispatchToken(result.token));
+      dispatch(loggingIn());
       toast.success('Login successfull, redirecting...');
       action.resetForm();
-      router.refresh();
+      await delay(2000);
+      router.push('/personnel/dashboard');
+    } else {
+      toast.error('Login failed');
     }
-    toast.error('Login failed');
   };
+
+  if(token && active){
+    return <div className='hidden'></div>
+  }
+
+
   return (
     <Formik
       initialValues={{ email: '', password: '' }}
@@ -37,7 +55,10 @@ export default function LoginForm() {
       {() => {
         return (
           <Form>
-            <div className="min-w-[90%] sm:min-w-[50%] lg:min-w-[30%] mx-auto my-32 p-5 bg-white shadow-md rounded-lg">
+            <h1 className="text-6xl text-indigo-600 text-center mt-40 pacifico-regular">
+              Fees2Pay
+            </h1>
+            <div className="lg:min-w-[35vw] sm:min-w-[90vw] mx-auto my-28 p-5 bg-white shadow-md rounded-lg">
               <h2 className="text-xl font-semibold leading-7 text-gray-900 text-center">
                 Login
               </h2>
@@ -81,7 +102,7 @@ export default function LoginForm() {
                 Login
               </button>
               <Link
-                href="/user/check-email"
+                href="/personnel/forgot-password"
                 className="underline text-blue-600"
               >
                 Forgot password? Click here...
@@ -91,6 +112,14 @@ export default function LoginForm() {
                 <span className="mx-4 text-sm text-gray-600">or</span>
                 <hr className="flex-grow border-t border-gray-300" />
               </div>
+              <button className="w-full flex justify-center items-center font-semibold h-14 px-6 mt-6 text-xl text-white transition-all duration-300 bg-emerald-600 rounded-lg hover:bg-emerald-700">
+                <Link
+                  href="/personnel/register"
+                  className="underline text-white"
+                >
+                  Register
+                </Link>
+              </button>
             </div>
           </Form>
         );

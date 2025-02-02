@@ -9,12 +9,16 @@ export const register = async (data: IRegister) =>{
             'Content-Type': 'application/json'
         }
     });
-    return {result: res.data, ok: res.status};
+    return {result: res.data, ok: true};
 }
 
-export const verify = async (token: string) =>{
-    const res = await axios.get(`${link}/personnel/verify/${token}`);
-    return {result: res.data, ok: res.status};
+export const verifyPersonnel = async (token: string) =>{
+    const res = await axios.get(`${link}/personnel/verify/${token}`,{
+        headers:{
+            Authorization: `Bearer ${token}`
+        }
+    });
+    return {result: res.data, ok: true};
 }
 
 export const login = async (data: ILogin) =>{
@@ -23,6 +27,6 @@ export const login = async (data: ILogin) =>{
             'Content-Type': 'application/json'
         }
     });
-    return {result: res.data, ok: res.status};
+    return {result: res.data, ok: true};
 }
 
