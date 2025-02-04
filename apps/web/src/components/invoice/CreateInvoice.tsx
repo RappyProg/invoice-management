@@ -113,8 +113,8 @@ export default function CreateInvoiceForm() {
         return (
           <Form>
             <div className="p-2 m-2 flex flex-col space-y-2 spacex-3 min-h-[80vh] min-w-[80vw] bg-white rounded-lg">
-              <div className="p-8 flex flex-row justify-evenly w-full border-y-8 border-black border-dotted">
-                <div className="p-5 w-full flex flex-col justify-center items-center space-y-5 border-x-4 border-black">
+              <div className="p-8 flex flex-row justify-evenly w-full border-y-8 border-black border-double">
+                <div className="p-5 w-full flex flex-col justify-center items-center space-y-5 border-x-8 border-black border-double">
                   <label className="text-lg font-bold underline text-center">
                     Client
                   </label>
@@ -139,7 +139,7 @@ export default function CreateInvoiceForm() {
                     ))}
                   </Field>
                 </div>
-                <div className="p-5 w-full flex flex-col justify-between items-center space-y-5 border-x-4 border-black">
+                <div className="p-5 w-full flex flex-col justify-between items-center space-y-5 border-x-8 border-black border-double">
                   <label className="text-lg font-bold underline text-center">
                     Personnel
                   </label>
@@ -149,7 +149,7 @@ export default function CreateInvoiceForm() {
                   <div></div>
                 </div>
               </div>
-              <div className="p-2 w-full border-b-8 border-black border-dotted">
+              <div className="p-2 w-full border-b-8 border-black border-double">
                 <button
                   type="button"
                   onClick={addInvoiceItem}
@@ -158,7 +158,8 @@ export default function CreateInvoiceForm() {
                   Add Item{' '}
                   <FontAwesomeIcon icon={faPlus} className="text-green-500" />
                 </button>
-                <div className="max-h-[300px] overflow-y-auto border border-gray-300 rounded-md">
+                <div className='flex-grow min-h-[345px]'>
+                <div className="max-h-[330px] overflow-y-auto border border-gray-300 rounded-md">
                   <table className="w-full border-collapse border border-gray-300">
                     <thead className="sticky top-0 bg-gray-100 z-10">
                       <tr>
@@ -244,6 +245,7 @@ export default function CreateInvoiceForm() {
                       ))}
                     </tbody>
                   </table>
+                </div>
                 </div>
                 <div className="w-full flex flex-row justify-end">
                   <button

@@ -11,7 +11,7 @@ export async function createUniqueInvoiceId(client_id: string, client_name: stri
     },
   });
 
-  const uniqueId = `${client_name.slice(0,4).toUpperCase()}/${counter.lastInvoiceNumber}`;
+  const uniqueId = `${client_name.slice(0,4).toUpperCase()}-${counter.lastInvoiceNumber}`;
 
   return uniqueId;
 }

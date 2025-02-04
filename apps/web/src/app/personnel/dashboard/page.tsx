@@ -1,7 +1,10 @@
+import DashboardComponent from "@/components/personnel/dashboard/Dashboard";
+import Wrapper from "@/components/wrapper/wrapper";
+
 export default function Dashboard(){
     return (
-        <div>
-            <h1>Dashboard</h1>
-        </div>
+        <Wrapper>
+            <DashboardComponent />
+        </Wrapper>
     )
 }

@@ -1,6 +1,9 @@
+import { createInvoice } from '@/helpers/createInvoice';
 import { calculateTotal, createUniqueInvoiceId } from '@/helpers/invoice';
-import { findClient, findPersonnel } from '@/helpers/prismaFind';
+import { sendInvoiceMail } from '@/helpers/nodemailer';
+import { findClient } from '@/helpers/prismaFind';
 import prisma from '@/prisma';
+import { generateInvoicePDF } from '@/utils/generatePDF';
 import { Request, Response } from 'express';
 
 export class InvoiceController {
@@ -8,30 +11,20 @@ export class InvoiceController {
     const { client_id, personnel_id, total, invoiceItems } = req.body;
     const client = await findClient(client_id);
     if(!client) throw new Error('Client not found');
-    const personnel = await findPersonnel(personnel_id);
     const uniqueId = await createUniqueInvoiceId(client_id, client?.name);
     const calculatedTotal = await calculateTotal(invoiceItems);
     let date = new Date();
-
-    const invoice = await prisma.invoice.create({
-      data: {
+    const invoice = await createInvoice(uniqueId, client_id, personnel_id, calculatedTotal, date, invoiceItems);
+    const invoicePDF = await generateInvoicePDF(uniqueId);
+    await prisma.invoice.update({
+      where: {
         id: uniqueId,
-        client_id: parseInt(client_id),
-        personnel_id: parseInt(personnel_id),
-        status: 'PENDING',
-        total: calculatedTotal,
-        dueDate: new Date(date.setDate(date.getDate() + 1)),
-        invoiceItems: {
-          create: invoiceItems.map((item: any) => ({
-            product_id: item.product_id,
-            quantity: item.quantity,
-            price: item.price,
-          })),
-        },
       },
-      include: { invoiceItems: true },
+      data: {
+        pdfPath: invoicePDF,
+      },
     });
-
+    await sendInvoiceMail(client.email, uniqueId, invoicePDF)
     return res.status(201).send({
       status: 'ok',
       message: 'Invoice created',
@@ -45,6 +38,10 @@ export class InvoiceController {
       where: {
         personnel_id: parseInt(personnel_id),
       },
+      orderBy:{
+        createdAt: 'desc'
+      }
+      
     });
 
     return res.status(200).send({
@@ -54,30 +51,27 @@ export class InvoiceController {
     });
   }
 
-  async getInvoiceById(req: Request, res: Response) {
-    const { invoice_id } = req.params;
+  async payment(req: Request, res: Response) {
+    const {invoice_id} = req.params;
     const invoice = await prisma.invoice.findUnique({
+      where: {
+        id: invoice_id
+      },
+    });
+    if(!invoice) throw new Error('Invoice not found');
+    await prisma.invoice.update({
       where: {
         id: invoice_id,
       },
-      include: { invoiceItems: true },
+      data: {
+        status: "PAID",
+      },
     });
-
     return res.status(200).send({
       status: 'ok',
-      message: 'Invoice retrieved',
-      invoice,
+      message: 'Invoice paid',
     });
   }
 
-  async send(req: Request, res: Response) {
-    const { invoice_id } = req.params;
-    
 
-    return res.status(200).send({
-      status: 'ok',
-      message: 'Invoice sent',
-      
-    });
-  }
 }

@@ -5,7 +5,9 @@ export interface IInvoice{
     client_id: string;
     personnel_id: string;
     status: string;
+    createdAt?: string;
     dueDate?: string
     total: number;
     invoiceItems: IInvoiceItems[];
+    pdfPath?: string;
 }

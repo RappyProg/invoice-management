@@ -27,11 +27,11 @@ export const getInvoices = async (personnel_id: string) => {
   };
 }
 
-export const getInvoiceById = async (id: string) => {
-  const res = await axios.get(`${link}/invoice/${id}`, {
+export const payInvoice = async (invoice_id: string) => {
+  const res = await axios.post(`${link}/invoice/payment/${invoice_id}`, {
     headers: {
       'Content-Type': 'application/json'
-    }
+    },
   });
   return {
     result: res.data,

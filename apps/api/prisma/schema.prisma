@@ -11,30 +11,29 @@ datasource db {
 }
 
 model Personnel {
-  id Int @id @default(autoincrement())
-  name String
-  email String @unique
-  password String?
-  isVerified Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String   @unique
+  password   String?
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   invoices Invoice[]
-
 }
 
 model Client {
-  id Int @id @default(autoincrement())
-  name String
-  email String @unique
-  address String
-  phone String
+  id            Int           @id @default(autoincrement())
+  name          String
+  email         String        @unique
+  address       String
+  phone         String
   paymentMethod paymentMethod
-  status Status @default(ACTIVE)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status        Status        @default(ACTIVE)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
-  invoices Invoice[]
+  invoices       Invoice[]
   invoiceCounter InvoiceCounter?
 }
 
@@ -50,50 +49,48 @@ enum paymentMethod {
 }
 
 model Product {
-  id Int @id @default(autoincrement())
-  name String
-  description String  
-  price Float
-  stock Int?
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  stock       Int?
 
   invoiceItems InvoiceItem[]
-  
 }
 
 model Invoice {
-  id String @id
+  id           String         @id
   personnel_id Int
-  client_id Int
+  client_id    Int
   invoiceItems InvoiceItem[]
-  total Float
-  status Invoice_Status @default(PENDING)
-  dueDate DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  total        Float
+  status       Invoice_Status @default(PENDING)
+  dueDate      DateTime
+  pdfPath      String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 
   personnel Personnel @relation(fields: [personnel_id], references: [id])
-  client Client @relation(fields: [client_id], references: [id])
-
+  client    Client    @relation(fields: [client_id], references: [id])
 }
 
 model InvoiceCounter {
-  id Int @id @default(autoincrement())
-  client_id Int @unique
+  id                Int @id @default(autoincrement())
+  client_id         Int @unique
   lastInvoiceNumber Int @default(0)
 
   client Client @relation(fields: [client_id], references: [id])
 }
 
-model InvoiceItem{
-  id Int @id @default(autoincrement())
+model InvoiceItem {
+  id         Int    @id @default(autoincrement())
   invoice_id String
   product_id Int
-  quantity Int
-  price Float
+  quantity   Int
+  price      Float
 
   invoice Invoice @relation(fields: [invoice_id], references: [id])
   product Product @relation(fields: [product_id], references: [id])
-
 }
 
 enum Invoice_Status {

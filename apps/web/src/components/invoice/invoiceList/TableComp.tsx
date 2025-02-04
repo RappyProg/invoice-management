@@ -1,6 +1,7 @@
 'use client';
 
 import { IInvoice } from '@/types/invoices';
+import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -71,10 +72,9 @@ export default function InvoiceTable({ invoices }: InvoiceTableProps) {
             <tr>
               <th>ID</th>
               <th>Total</th>
+              <th>Created At</th>
               <th>Due Date</th>
               <th>Status</th>
-
-              {/*<th className="text-center">Action</th>*/}
             </tr>
           </thead>
           <tbody className="p-4">
@@ -87,12 +87,28 @@ export default function InvoiceTable({ invoices }: InvoiceTableProps) {
                   <td>{invoice.id}</td>
                   <td>{invoice.total}</td>
                   <td>
+                    {invoice.createdAt
+                      ? new Date(invoice.createdAt).toLocaleDateString(
+                          'en-US',
+                          {
+                            weekday: 'short',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            second: 'numeric',
+                          },
+                        )
+                      : 'N/A'}
+                  </td>
+                  <td>
                     {invoice.dueDate
                       ? new Date(invoice.dueDate).toLocaleDateString('en-US', {
-                          weekday: 'short', 
+                          weekday: 'short',
                           year: 'numeric',
-                          month: 'long', 
-                          day: 'numeric', 
+                          month: 'long',
+                          day: 'numeric',
                         })
                       : 'N/A'}
                   </td>
@@ -110,20 +126,6 @@ export default function InvoiceTable({ invoices }: InvoiceTableProps) {
                   >
                     {invoice.status}
                   </td>
-                  {/*<td className="flex justify-evenly">
-                    <button
-                      onClick={}
-                      className="text-yellow-500"
-                    >
-                      <FontAwesomeIcon icon={} />
-                    </button>
-                    <button
-                      onClick={}
-                      className="text-red-500"
-                    >
-                      <FontAwesomeIcon icon={} />
-                    </button>
-                  </td>*/}
                 </tr>
               ))
             ) : (
