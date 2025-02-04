@@ -1,8 +1,6 @@
 'use client';
 
 import { IInvoice } from '@/types/invoices';
-import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -131,7 +129,7 @@ export default function InvoiceTable({ invoices }: InvoiceTableProps) {
             ) : (
               <tr>
                 <td colSpan={8} className="text-center py-4">
-                  No clients found.
+                  No invoices found.
                 </td>
               </tr>
             )}

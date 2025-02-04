@@ -21,7 +21,7 @@ export default function UserDropdowns() {
           <hr className="flex-grow border-t-2 border-black rounded-full" />
         
         <MenuItem>
-          <Link href="/personnel/change-password" className="block">
+          <Link href="/personnel/reset-password" className="block">
             Change Password
           </Link>
         </MenuItem>

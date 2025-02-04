@@ -54,3 +54,17 @@ export const sendInvoiceMail = async (clientEmail: string, invoiceId: string, pd
         ],
     });
 };
+
+export const sendPasswordResetMail = async (userEmail: string) => {
+    const templatePath = path.join(__dirname, '../templates/resetPasswordMail.hbs');
+    const source = fs.readFileSync(templatePath, 'utf-8');
+    const compiled = handlebars.compile(source);
+    const html = compiled({link: `${process.env.CLIENT_URL}/personnel/reset-password`});
+
+    await transporter.sendMail({
+        from: process.env.EMAIL,
+        to: userEmail,
+        subject: 'Password Reset',
+        html: html,
+    });
+}

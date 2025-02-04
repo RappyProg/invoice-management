@@ -2,7 +2,7 @@ import prisma from '@/prisma';
 import { Request, Response } from 'express';
 import { compare, genSalt, hash } from 'bcrypt';
 import { sign, verify } from 'jsonwebtoken';
-import { sendVerificationMail } from '@/helpers/nodemailer';
+import { sendPasswordResetMail, sendVerificationMail } from '@/helpers/nodemailer';
 import { createToken } from '@/middleware/token';
 import { findPersonnel, findPersonnelById } from '@/helpers/prismaFind';
 
@@ -86,6 +86,51 @@ export class PersonnelController {
       return res.status(400).send({
         status: 'error',
         message: 'Login failed',
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  async forgotPassword(req: Request, res: Response) {
+    try {
+      const { email } = req.body;
+      const personnel = await findPersonnel(email);
+      if (!personnel) throw new Error('Personnel not found');
+      await sendPasswordResetMail(personnel.email);
+      return res.status(200).send({
+        status: 'success',
+        message: 'Password reset email sent',
+      });
+    } catch (error: any) {
+      return res.status(400).send({
+        status: 'error',
+        message: 'Password reset failed',
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  async resetPassword(req: Request, res: Response) {
+    try {
+      const { email, newPassword } = req.body;
+      const personnel = await findPersonnel(email);
+      if (!personnel) throw new Error('Personnel not found');
+      const salt = await genSalt(10);
+      const hashedPassword = await hash(newPassword, salt);
+      const comparePassword = await compare(newPassword, personnel.password!);
+      if(comparePassword) throw new Error('Password cannot be the same');
+      await prisma.personnel.update({
+        where: { id: personnel.id },
+        data: { password: hashedPassword },
+      });
+      return res.status(200).send({
+        status: 'success',
+        message: 'Password reset successful',
+      });
+    } catch (error: any) {
+      return res.status(400).send({
+        status: 'error',
+        message: 'Password reset failed',
         error: error instanceof Error ? error.message : String(error),
       });
     }

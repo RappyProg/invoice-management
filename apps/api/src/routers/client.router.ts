@@ -17,6 +17,7 @@ export class ClientRouter{
         this.router.post('/deactivate/:id', this.clientController.deactivate);
         this.router.delete('/delete/:id', this.clientController.delete);
         this.router.get('/list', this.clientController.getClients);
+        this.router.get('/dashboard-list', this.clientController.dashboardClients);
     }
 
     getRouter(): Router {

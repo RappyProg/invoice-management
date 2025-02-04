@@ -1,7 +1,10 @@
+import PersonnelProfile from "@/components/personnel/Profile";
+import Wrapper from "@/components/wrapper/wrapper";
+
 export default function Profile(){
     return (
-        <div>
-            <h1>Profile</h1>
-        </div>
+        <Wrapper>
+            <PersonnelProfile />
+        </Wrapper>
     )
 }
