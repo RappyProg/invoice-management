@@ -1,7 +1,10 @@
-export default function InvoiceList(){
+import InvoiceList from "@/components/invoice/invoiceList/InvoiceList";
+import Wrapper from "@/components/wrapper/wrapper";
+
+export default function Invoices(){
     return(
-        <div>
-            <h1>Invoice List</h1>
-        </div>
+        <Wrapper>
+            <InvoiceList/>
+        </Wrapper>
     )
 }

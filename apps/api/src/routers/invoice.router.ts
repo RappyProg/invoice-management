@@ -13,7 +13,7 @@ export class InvoiceRouter{
 
     private initializeRoutes(): void {
         this.router.post('/create', this.invoiceController.create);
-        this.router.get('/list', this.invoiceController.getAllInvoices);
+        this.router.get('/list/:personnel_id', this.invoiceController.getAllInvoices);
     }
 
     getRouter(): Router {

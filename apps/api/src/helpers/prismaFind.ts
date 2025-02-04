@@ -1,9 +1,9 @@
 import prisma from '@/prisma';
 
-export function findClient(email: string) {
+export function findClient(id: string) {
   return prisma.client.findUnique({
     where: {
-      email,
+      id: parseInt(id)
     },
   });
 }

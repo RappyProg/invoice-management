@@ -14,3 +14,27 @@ export const createInvoice = async (data: IInvoice) => {
     ok: true
   };
 }
+
+export const getInvoices = async (personnel_id: string) => {
+  const res = await axios.get(`${link}/invoice/list/${personnel_id}`, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  });
+  return {
+    result: res.data,
+    ok: true
+  };
+}
+
+export const getInvoiceById = async (id: string) => {
+  const res = await axios.get(`${link}/invoice/${id}`, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  return {
+    result: res.data,
+    ok: true
+  };
+}
