@@ -1,4 +1,5 @@
 import { ProductController } from "@/controllers/product.controller";
+import { validateEditProduct, validateProduct } from "@/middleware/validator";
 import { Router } from "express";
 
 export class ProductRouter{
@@ -12,9 +13,9 @@ export class ProductRouter{
     }
 
     private initializeRoutes(): void {
-        this.router.post('/create', this.productController.create);
-        this.router.post('/edit/:id', this.productController.edit);
-        this.router.delete('/delete/:id', this.productController.delete);
+        this.router.post('/create', validateProduct, this.productController.create);
+        this.router.post('/edit/:id', validateEditProduct, this.productController.edit);
+        this.router.delete('/delete/:id', this.productController.softDelete);
         this.router.get('/list', this.productController.productList);
     }
 

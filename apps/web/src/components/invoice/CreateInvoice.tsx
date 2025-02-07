@@ -9,22 +9,46 @@ import { IInvoice } from '@/types/invoices';
 import { IProduct } from '@/types/product';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Field, Form, Formik, FormikHelpers } from 'formik';
-import { useSearchParams } from 'next/navigation';
+import { ErrorMessage, Field, Form, Formik, FormikHelpers } from 'formik';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import * as Yup from 'yup';
+
+export const invoiceItemSchema = Yup.object().shape({
+  product_id: Yup.number().required('Product is required'),
+  quantity: Yup.number()
+    .min(1, 'Quantity must be at least 1')
+    .required('Quantity is required'),
+  price: Yup.number()
+    .min(0, 'Price cannot be negative')
+    .required('Price is required'),
+});
+
+export const invoiceSchema = Yup.object().shape({
+  client_id: Yup.number().required('Client is required'),
+  personnel_id: Yup.number().required('Personnel is required'),
+  status: Yup.string()
+    .oneOf(['PENDING', 'PAID', 'CANCELLED'], 'Invalid status')
+    .required('Status is required'),
+  total: Yup.number()
+    .min(0, 'Total cannot be negative')
+    .required('Total is required'),
+  invoiceItems: Yup.array()
+    .of(invoiceItemSchema)
+    .min(1, 'At least one invoice item is required'),
+});
 
 export default function CreateInvoiceForm() {
   const [clients, setClients] = useState<IClient[]>([]);
   const [products, setProducts] = useState<IProduct[]>([]);
   const [invoiceItems, setInvoiceItems] = useState<IInvoiceItems[]>([]);
   const personnel = useAppSelector((state) => state.personnel.profile);
-  if (!personnel) throw new Error();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const initialSearchQuery = searchParams.get('search') || '';
   const [searchQuery, setSearchQuery] = useState<string>(initialSearchQuery);
   const [searchProductQuery, setSearchProductQuery] = useState<string[]>([]);
-
   const filteredClients = searchQuery
     ? clients.filter((client) =>
         client.name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -78,15 +102,21 @@ export default function CreateInvoiceForm() {
     fetchProducts();
   }, []);
 
+  if (!personnel) {
+    router.push('/');
+    return null;
+  }
+
   return (
     <Formik
       initialValues={{
-        client_id: '',
-        personnel_id: personnel.id.toString(),
+        client_id: 0,
+        personnel_id: personnel.id,
         status: 'PENDING',
         total: 0,
         invoiceItems: invoiceItems,
       }}
+      validationSchema={invoiceSchema}
       onSubmit={(values, action) => submitInvoiceData(values, action)}
     >
       {({ values, setFieldValue }) => {
@@ -129,15 +159,28 @@ export default function CreateInvoiceForm() {
                     name="client_id"
                     as="select"
                     className="min-w-[300px] text-center p-2"
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                      const value = e.target.value
+                        ? Number(e.target.value)
+                        : '';
+                      setFieldValue('client_id', value);
+                    }}
                   >
-                    <option value="" className='text-gray-500'>Select a client</option>
+                    <option value="" className="text-gray-500">
+                      Select a client
+                    </option>
                     {filteredClients.map((client) => (
-                      <option
-                        key={client.id}
-                        value={client.id}
-                      >{`${client.name}`}</option>
+                      <option key={client.id} value={client.id}>
+                        {client.name}
+                      </option>
                     ))}
                   </Field>
+
+                  <ErrorMessage
+                    name="client_id"
+                    component="div"
+                    className="text-sm text-red-500 mt-1"
+                  />
                 </div>
                 <div className="p-5 w-full flex flex-col justify-between items-center space-y-5 border-x-8 border-black border-double">
                   <label className="text-lg font-bold underline text-center">
@@ -158,94 +201,113 @@ export default function CreateInvoiceForm() {
                   Add Item{' '}
                   <FontAwesomeIcon icon={faPlus} className="text-green-500" />
                 </button>
-                <div className='flex-grow min-h-[345px]'>
-                <div className="max-h-[330px] overflow-y-auto border border-gray-300 rounded-md">
-                  <table className="w-full border-collapse border border-gray-300">
-                    <thead className="sticky top-0 bg-gray-100 z-10">
-                      <tr>
-                        <th className="border border-gray-300 p-2">Product</th>
-                        <th className="border border-gray-300 p-2">Quantity</th>
-                        <th className="border border-gray-300 p-2">
-                          Price per Unit
-                        </th>
-                        <th className="border border-gray-300 p-2">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="overflow-y-auto">
-                      {values.invoiceItems.map((item, index) => (
-                        <tr key={index}>
-                          <td className="p-2 flex flex-row justify-evenly">
-                            <input
-                              type="text"
-                              placeholder="Search by name"
-                              className="p-2 border-2 border-black rounded-md"
-                              value={searchProductQuery[index] || ''}
-                              onChange={(e) =>
-                                handleProductSearchChange(index, e.target.value)
-                              }
-                            />
-                            <Field
-                              as="select"
-                              name={`invoiceItems[${index}].product_id`}
-                              onChange={(
-                                e: React.ChangeEvent<HTMLSelectElement>,
-                              ) => {
-                                const selectedProduct = products.find(
-                                  (p) => p.id === Number(e.target.value),
-                                );
-                                setFieldValue(
-                                  `invoiceItems[${index}].product_id`,
-                                  e.target.value,
-                                );
-                                setFieldValue(
-                                  `invoiceItems[${index}].price`,
-                                  selectedProduct ? selectedProduct.price : 0,
-                                );
-                              }}
-                              className="w-full text-center"
-                            >
-                              {filteredProducts(
-                                searchProductQuery[index] || '',
-                              ).map((product) => (
-                                <option key={product.id} value={product.id}>
-                                  {product.name}
-                                </option>
-                              ))}
-                            </Field>
-                          </td>
-                          <td className="border border-gray-300 p-2">
-                            <Field
-                              type="number"
-                              name={`invoiceItems[${index}].quantity`}
-                              min="1"
-                              className="w-full text-center"
-                            />
-                          </td>
-                          <td className="border border-gray-300 p-2">
-                            <Field
-                              type="number"
-                              name={`invoiceItems[${index}].price`}
-                              className="w-full text-center"
-                              disabled
-                            />
-                          </td>
-                          <td className="border border-gray-300 p-2">
-                            <button
-                              type="button"
-                              onClick={() => removeInvoiceItem(index)}
-                              className="w-full text-center"
-                            >
-                              <FontAwesomeIcon
-                                icon={faTrash}
-                                className="text-red-500"
-                              />
-                            </button>
-                          </td>
+                <div className="flex-grow min-h-[345px]">
+                  <div className="max-h-[330px] overflow-y-auto border border-gray-300 rounded-md">
+                    <table className="w-full border-collapse border border-gray-300">
+                      <thead className="sticky top-0 bg-gray-100 z-10">
+                        <tr>
+                          <th className="border border-gray-300 p-2">
+                            Product
+                          </th>
+                          <th className="border border-gray-300 p-2">
+                            Quantity
+                          </th>
+                          <th className="border border-gray-300 p-2">
+                            Price per Unit
+                          </th>
+                          <th className="border border-gray-300 p-2">
+                            Actions
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody className="overflow-y-auto">
+                        {values.invoiceItems.map((item, index) => (
+                          <tr key={index}>
+                            <td className="p-2 flex flex-row justify-evenly">
+                              <input
+                                type="text"
+                                placeholder="Search by name"
+                                className="p-2 border-2 border-black rounded-md"
+                                value={searchProductQuery[index] || ''}
+                                onChange={(e) =>
+                                  handleProductSearchChange(
+                                    index,
+                                    e.target.value,
+                                  )
+                                }
+                              />
+                              <Field
+                                as="select"
+                                name={`invoiceItems[${index}].product_id`}
+                                onChange={(
+                                  e: React.ChangeEvent<HTMLSelectElement>,
+                                ) => {
+                                  const selectedProduct = products.find(
+                                    (p) => p.id === Number(e.target.value),
+                                  );
+                                  setFieldValue(
+                                    `invoiceItems[${index}].product_id`,
+                                    e.target.value,
+                                  );
+                                  setFieldValue(
+                                    `invoiceItems[${index}].price`,
+                                    selectedProduct ? selectedProduct.price : 0,
+                                  );
+                                }}
+                                className="w-full text-center"
+                              >
+                                {filteredProducts(
+                                  searchProductQuery[index] || '',
+                                ).map((product) => (
+                                  <option key={product.id} value={product.id}>
+                                    {product.name}
+                                  </option>
+                                ))}
+                              </Field>
+                              <ErrorMessage
+                                name={`invoiceItems[${index}].product_id`}
+                                component="div"
+                                className="text-sm text-red-500 mt-1"
+                              />
+                            </td>
+                            <td className="border border-gray-300 p-2">
+                              <Field
+                                type="number"
+                                name={`invoiceItems[${index}].quantity`}
+                                min="1"
+                                className="w-full text-center"
+                              />
+                            </td>
+                            <td className="border border-gray-300 p-2">
+                              <Field
+                                type="number"
+                                name={`invoiceItems[${index}].price`}
+                                className="w-full text-center"
+                                disabled
+                              />
+                              <ErrorMessage
+                                name={`invoiceItems[${index}].price`}
+                                component="div"
+                                className="text-sm text-red-500 mt-1"
+                              />
+                            </td>
+                            <td className="border border-gray-300 p-2">
+                              <button
+                                type="button"
+                                onClick={() => removeInvoiceItem(index)}
+                                className="w-full text-center"
+                              >
+                                <FontAwesomeIcon
+                                  icon={faTrash}
+                                  className="text-red-500"
+                                />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
                 <div className="w-full flex flex-row justify-end">
                   <button

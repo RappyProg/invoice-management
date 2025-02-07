@@ -1,14 +1,20 @@
 'use client';
 
 import { IInvoice } from '@/types/invoices';
+import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface InvoiceTableProps {
   invoices: IInvoice[];
+  onDeleteModal: (invoice: IInvoice) => void;
 }
 
-export default function InvoiceTable({ invoices }: InvoiceTableProps) {
+export default function InvoiceTable({
+  invoices,
+  onDeleteModal,
+}: InvoiceTableProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pageLimit = 15;
@@ -73,6 +79,7 @@ export default function InvoiceTable({ invoices }: InvoiceTableProps) {
               <th>Created At</th>
               <th>Due Date</th>
               <th>Status</th>
+              <th className="text-center">Action</th>
             </tr>
           </thead>
           <tbody className="p-4">
@@ -124,6 +131,12 @@ export default function InvoiceTable({ invoices }: InvoiceTableProps) {
                   >
                     {invoice.status}
                   </td>
+                  <button
+                    onClick={() => onDeleteModal(invoice)}
+                    className="text-red-500 ml-10"
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
                 </tr>
               ))
             ) : (

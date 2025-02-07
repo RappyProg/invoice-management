@@ -34,7 +34,7 @@ export class ClientController{
                 email,
                 phone,
                 paymentMethod,
-                status
+                updatedAt: new Date(),
             }
         });
         return res.status(200).send({
@@ -44,14 +44,15 @@ export class ClientController{
         })
     }
 
-    async deactivate(req: Request, res: Response) {
+    async softDelete(req: Request, res: Response) {
         const {id} = req.params;
         const client = await prisma.client.update({
             where: {
                 id: parseInt(id)
             },
             data: {
-                status: "INACTIVE"
+                isDeleted: true,
+                deletedAt: new Date()
             }
         });
         return res.status(200).send({
@@ -62,21 +63,14 @@ export class ClientController{
     }
 
 
-    async delete (req: Request, res: Response) {
-        const {id} = req.params;
-        await prisma.client.delete({
-            where: {
-                id: parseInt(id)
-            }
-        });
-        return res.status(204).send({
-            status: 'ok',
-            message: 'Client deleted'
-        });
-    }
-
     async getClients(req: Request, res: Response) {
-        const clients = await prisma.client.findMany();
+        const clients = await prisma.client.findMany(
+            {
+                where: {
+                    isDeleted: false
+                }
+            }
+        );
         return res.status(200).send({
             status: 'ok',
             clients
@@ -92,7 +86,8 @@ export class ClientController{
                 createdAt: {
                     gte: todayStart,
                     lt: todayEnd
-                }
+                },
+                isDeleted: false
             },
             orderBy: {
                 createdAt: 'desc'

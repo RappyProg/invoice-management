@@ -46,8 +46,8 @@ export const generateInvoicePDF = async (invoiceId: string): Promise<string> => 
                       <tr>
                           <td>${item.product.name}</td>
                           <td>${item.quantity}</td>
-                          <td>Rp.${item.price.toFixed(2)}</td>
-                          <td>Rp.${(item.quantity * item.price).toFixed(2)}</td>
+                          <td>Rp.${item.price}</td>
+                          <td>Rp.${(item.quantity * item.price)}</td>
                       </tr>
                   `,
                     )
@@ -55,7 +55,7 @@ export const generateInvoicePDF = async (invoiceId: string): Promise<string> => 
               </tbody>
           </table>
           
-          <h3 style="text-align: right;">Total: Rp.${invoice.total.toFixed(2)}</h3>
+          <h3 style="text-align: right;">Total: Rp.${invoice.total}</h3>
       </body>
       </html>
     `;

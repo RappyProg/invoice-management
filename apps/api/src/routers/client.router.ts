@@ -1,4 +1,5 @@
 import { ClientController } from "@/controllers/client.controller";
+import { validateClient, validateEditClient } from "@/middleware/validator";
 import { Router } from "express";
 
 export class ClientRouter{
@@ -12,10 +13,9 @@ export class ClientRouter{
     }
 
     private initializeRoutes(): void {
-        this.router.post('/create', this.clientController.create);
-        this.router.post('/edit/:id', this.clientController.edit);
-        this.router.post('/deactivate/:id', this.clientController.deactivate);
-        this.router.delete('/delete/:id', this.clientController.delete);
+        this.router.post('/create', validateClient, this.clientController.create);
+        this.router.post('/edit/:id', validateEditClient, this.clientController.edit);
+        this.router.delete('/delete/:id', this.clientController.softDelete);
         this.router.get('/list', this.clientController.getClients);
         this.router.get('/dashboard-list', this.clientController.dashboardClients);
     }

@@ -77,6 +77,7 @@ export default function CreateProductForm() {
               </label>
               <Field
                 name="price"
+                type="number"
                 className="block w-full rounded-lg border-2 border-gray-300 p-3 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
               >
               </Field>
@@ -92,6 +93,7 @@ export default function CreateProductForm() {
               </label>
               <Field
                 name="stock"
+                type="number"
                 className="block w-full rounded-lg border-2 border-gray-300 p-3 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
               >
               </Field>

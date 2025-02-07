@@ -1,9 +1,13 @@
 'use client';
 import { forgotPassword } from '@/lib/personnel';
-import { values } from 'cypress/types/lodash';
 import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import * as yup from 'yup';
+
+const ForgotPasswordSchema = yup.object().shape({
+  email: yup.string().email('Invalid email').required('Email is required'),
+});
 
 export default function ForgotPasswordForm() {
   const router = useRouter();
@@ -19,6 +23,7 @@ export default function ForgotPasswordForm() {
   return (
     <Formik
       initialValues={{ email: '' }}
+      validationSchema={ForgotPasswordSchema}
       onSubmit={(values) => clickSubmit(values.email)}
     >
       {() => (

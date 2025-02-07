@@ -9,7 +9,6 @@ const EditSchema = yup.object().shape({
   email: yup.string().email().required(),
   phone: yup.number().required(),
   paymentMethod: yup.string().required(),
-  status: yup.string().required(),
 });
 
 interface EditModalProps{
@@ -39,7 +38,6 @@ export default function EditModal({editingClient, onClose, onSubmit}: EditModalP
                       email: editingClient.email,
                       phone: editingClient.phone,
                       paymentMethod: editingClient.paymentMethod,
-                      status: editingClient.status,
                     }}
                     validationSchema={EditSchema}
                     onSubmit={onSubmit}
@@ -95,19 +93,6 @@ export default function EditModal({editingClient, onClose, onSubmit}: EditModalP
                             <option value="PAYPAL">PayPal</option>
                           </Field>
                           <ErrorMessage name="paymentMethod" component="div" className="text-sm text-red-500 mt-1" />
-                        </div>
-                        <div className="mt-4">
-                          <label>Status:</label>
-                          <Field
-                            as="select"
-                            name="status"
-                            className="block w-full rounded-lg border-2 p-3"
-                          >
-                            <option value='' className='text-gray-500 opacity-50' defaultChecked>Select Status</option>
-                            <option value="ACTIVE">Active</option>
-                            <option value="INACTIVE">Inactive</option>
-                          </Field>
-                          <ErrorMessage name="status" component="div" className="text-sm text-red-500 mt-1" />
                         </div>
                         <div className="mt-4 flex justify-evenly">
                           <button

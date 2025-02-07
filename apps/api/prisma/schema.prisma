@@ -11,13 +11,13 @@ datasource db {
 }
 
 model Personnel {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   name       String
-  email      String   @unique
+  email      String    @unique
   password   String?
-  isVerified Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  isVerified Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime? @updatedAt
 
   invoices Invoice[]
 }
@@ -29,17 +29,13 @@ model Client {
   address       String
   phone         String
   paymentMethod paymentMethod
-  status        Status        @default(ACTIVE)
   createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  updatedAt     DateTime?     @updatedAt
+  isDeleted     Boolean       @default(false)
+  deletedAt     DateTime?
 
   invoices       Invoice[]
   invoiceCounter InvoiceCounter?
-}
-
-enum Status {
-  ACTIVE
-  INACTIVE
 }
 
 enum paymentMethod {
@@ -49,11 +45,15 @@ enum paymentMethod {
 }
 
 model Product {
-  id          Int    @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   name        String
   description String
   price       Float
   stock       Int?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  isDeleted   Boolean   @default(false)
+  deletedAt   DateTime?
 
   invoiceItems InvoiceItem[]
 }
@@ -68,7 +68,9 @@ model Invoice {
   dueDate      DateTime
   pdfPath      String?
   createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  updatedAt    DateTime?      @updatedAt
+  isDeleted    Boolean        @default(false)
+  deletedAt    DateTime?
 
   personnel Personnel @relation(fields: [personnel_id], references: [id])
   client    Client    @relation(fields: [client_id], references: [id])
@@ -96,5 +98,5 @@ model InvoiceItem {
 enum Invoice_Status {
   PENDING
   PAID
-  CANCELLED
+  OVERDUE
 }

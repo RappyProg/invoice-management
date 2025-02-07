@@ -1,4 +1,3 @@
-import { IClientEdit } from '@/types/client';
 import { IProductCreate, IProductEdit } from '@/types/product';
 import axios from 'axios';
 
@@ -28,7 +27,7 @@ export const editProduct = async (data: IProductEdit) => {
   };
 };
 
-export const deleteProduct = async (id: number) => {
+export const softDeleteProduct = async (id: number) => {
   const res = await axios.delete(`${link}/product/delete/${id}`);
   return {
     result: res.data,

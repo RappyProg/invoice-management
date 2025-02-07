@@ -14,6 +14,7 @@ import { ClientRouter } from './routers/client.router';
 import { ProductRouter } from './routers/product.router';
 import { InvoiceRouter } from './routers/invoice.router';
 import path from 'path';
+import bodyParser from 'body-parser';
 
 export default class App {
   private app: Express;
@@ -29,7 +30,8 @@ export default class App {
     this.app.use(cors());
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
-    this.app.use('/storage', express.static(path.join(__dirname, 'storage')));
+    this.app.use(bodyParser.json())
+    this.app.use('/api/storage', express.static(path.join(__dirname, '../storage')));
   }
 
   private handleError(): void {

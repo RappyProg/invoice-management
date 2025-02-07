@@ -5,7 +5,6 @@ export interface IClient{
     email: string;
     phone: string;
     paymentMethod: string;
-    status: string;
 }
 
 export interface IClientCreate{
@@ -23,5 +22,4 @@ export interface IClientEdit{
     email: string;
     phone: string;
     paymentMethod: string;
-    status: string;
 }

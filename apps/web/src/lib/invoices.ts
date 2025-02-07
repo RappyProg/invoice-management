@@ -38,3 +38,27 @@ export const payInvoice = async (invoice_id: string) => {
     ok: true
   };
 }
+
+export const getInvoiceById = async (invoice_id: string) => {
+  const res = await axios.post(`${link}/invoice/invoice`, {invoice_id},{
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  });
+  return {
+    result: res.data,
+    ok: true
+  };
+}
+
+export const softDeleteInvoice = async (invoice_id: string) => {
+  const res = await axios.post(`${link}/invoice/delete`, {invoice_id} , {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  });
+  return {
+    result: res.data,
+    ok: true
+  };
+}

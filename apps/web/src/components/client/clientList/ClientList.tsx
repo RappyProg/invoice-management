@@ -1,5 +1,5 @@
 'use client';
-import { deleteClient, editClient, getClients } from '@/lib/client';
+import { softDeleteClient, editClient, getClients } from '@/lib/client';
 import { IClient, IClientEdit } from '@/types/client';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -48,11 +48,11 @@ export default function ClientLists() {
   };
   const handleDelete = async (id: number) => {
     const param = new URLSearchParams(window.location.search);
-    await deleteClient(id);
+    await softDeleteClient(id);
     setdeletingClient(null);
     param.delete('delete');
     toast.success('Client deleted successfully');
-    fetchClients();
+    await fetchClients();
   };
   const openDeleteModal = (client: IClient) => {
     const param = new URLSearchParams(window.location.search);

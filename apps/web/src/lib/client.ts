@@ -21,7 +21,7 @@ export const editClient = async(data: IClientEdit) => {
     return {result: res.data, ok: true};
 }
 
-export const deleteClient = async(id: number) => {
+export const softDeleteClient = async(id: number) => {
     const res = await axios.delete(`${link}/client/delete/${id}`);
     return {result: res.data, ok: true};
 }

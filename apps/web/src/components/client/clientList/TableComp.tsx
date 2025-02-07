@@ -84,7 +84,6 @@ export default function ClientTable({
               <th>Email</th>
               <th>Phone</th>
               <th>Payment Method</th>
-              <th>Status</th>
               <th className="text-center">Action</th>
             </tr>
           </thead>
@@ -101,7 +100,6 @@ export default function ClientTable({
                   <td>{client.email}</td>
                   <td>{client.phone}</td>
                   <td>{client.paymentMethod}</td>
-                  <td>{client.status}</td>
                   <td className="flex justify-evenly">
                     <button
                       onClick={() => onEditModal(client)}

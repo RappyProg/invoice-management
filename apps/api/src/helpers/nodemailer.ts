@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 import path from 'path';
 import fs from 'fs';
 import handlebars from 'handlebars';
+import prisma from '@/prisma';
 
 export const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -30,6 +31,12 @@ export const sendVerificationMail = async (userId: number, userEmail: string) =>
 };
 
 export const sendInvoiceMail = async (clientEmail: string, invoiceId: string, pdfPath: string) => {
+    const client = await prisma.client.findUnique({
+        where: {
+            email: clientEmail,
+        },
+    });
+    const clientName = client?.name;
     const templatePath = path.join(__dirname, '../templates/invoiceMail.hbs');
     const source = fs.readFileSync(templatePath, 'utf-8');
     const compiled = handlebars.compile(source);
@@ -37,6 +44,7 @@ export const sendInvoiceMail = async (clientEmail: string, invoiceId: string, pd
     const html = compiled({
         invoiceId,
         clientUrl: process.env.CLIENT_URL, 
+        clientName,
     });
 
     await transporter.sendMail({

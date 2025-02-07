@@ -27,7 +27,7 @@ export class ProductController{
                 id: parseInt(id)
             },
             data: {
-                name, description, price, stock
+                name, description, price, stock, updatedAt: new Date()
             }
         });
         return res.status(200).send({
@@ -37,11 +37,15 @@ export class ProductController{
         })
     }
 
-    async delete (req: Request, res: Response) {
+    async softDelete (req: Request, res: Response) {
         const {id} = req.params;
-        await prisma.product.delete({
+        await prisma.product.update({
             where: {
                 id: parseInt(id)
+            },
+            data:{
+                isDeleted: true,
+                deletedAt: new Date()
             }
         });
         return res.status(204).send({
@@ -51,7 +55,13 @@ export class ProductController{
     }
 
     async productList(req: Request, res: Response) {
-        const products = await prisma.product.findMany();
+        const products = await prisma.product.findMany(
+            {
+                where: {
+                    isDeleted: false
+                }
+            }
+        );
         return res.status(200).send({
             status: 'ok',
             message: 'Product list',
