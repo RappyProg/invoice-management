@@ -57,9 +57,8 @@ export const EditClientSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   address: z.string().min(1, 'Address is required'),
   email: z.string().email('Invalid email'),
-  phone: z.number({ invalid_type_error: 'Phone number is required' }),
+  phone: z.string({ invalid_type_error: 'Phone number is required' }),
   paymentMethod: z.string().min(1, 'Payment method is required'),
-  status: z.string().min(1, 'Status is required'),
 });
 
 export const EditProductSchema = z.object({

@@ -7,7 +7,7 @@ const EditSchema = yup.object().shape({
   name: yup.string().required(),
   address: yup.string().required(),
   email: yup.string().email().required(),
-  phone: yup.number().required(),
+  phone: yup.string().required(),
   paymentMethod: yup.string().required(),
 });
 

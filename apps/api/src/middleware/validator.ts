@@ -6,7 +6,7 @@ import { StatusCodes } from 'http-status-codes';
 function validateData(schema: z.ZodObject<any, any>) {
     return (req: Request, res: Response, next: NextFunction) => {
       try {
-        schema.parse(req.body);
+        schema.parse(req.body, req.params);
         next();
       } catch (error) {
         if (error instanceof ZodError) {

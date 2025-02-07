@@ -16,7 +16,7 @@ export const createProduct = async (data: IProductCreate) => {
 };
 
 export const editProduct = async (data: IProductEdit) => {
-  const res = await axios.put(`${link}/product/edit/${data.id}`, data, {
+  const res = await axios.post(`${link}/product/edit/${data.id}`, data, {
     headers: {
       'Content-Type': 'application/json',
     },
